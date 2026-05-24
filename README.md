@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Site varsayilan olarak `http://localhost:3000` adresinde acilir.
+Site varsayılan olarak `http://localhost:3000` adresinde açılır.
 
 ## İçerik
 
@@ -17,8 +17,8 @@ Haberler `posts/` klasöründeki Markdown dosyalarından okunur. Her dosyada şu
 
 ```md
 ---
-title: "Haber basligi"
-subtitle: "Kisa spot"
+title: "Haber başlığı"
+subtitle: "Kısa spot"
 date: "2026-05-24"
 category: ["Ekonomi"]
 author: "Haber Merkezi"
@@ -28,7 +28,7 @@ breaking: true
 ---
 ```
 
-Bir sonraki adımda RSS/API botu bu klasöre otomatik haber dosyaları yazacak veya CMS backend'e taşınacak.
+RSS/API botu bu klasöre otomatik haber dosyaları yazar. İstenirse sonraki aşamada içerik yönetimi ayrı bir CMS veya backend'e taşınabilir.
 
 ## Otomatik Haber
 
@@ -41,6 +41,21 @@ npm run news:generate
 Kaynaklar `scripts/news-sources.json` dosyasından yönetilir. Script yeni haberleri `posts/` klasörüne Markdown olarak yazar ve tekrarları `data/generated/news-state.json` içinde takip eder.
 
 GitHub Actions için `.github/workflows/update-news.yml` eklendi. Repo GitHub'a yüklendiğinde workflow elle veya saatlik zamanlamayla çalıştırılabilir.
+
+Mevcut haberleri OpenAI API ile yeniden yazmak için sunucudaki `.env` dosyasına gerçek anahtarı ekleyin:
+
+```bash
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-5.5
+```
+
+Ardından:
+
+```bash
+npm run news:enhance
+```
+
+Bu komut başlık, spot, SEO başlığı, SEO açıklaması, anahtar kelimeler ve Markdown haber gövdesini yeniden üretir.
 
 ## VPS Deploy Notları
 
