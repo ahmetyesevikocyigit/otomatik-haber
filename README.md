@@ -57,6 +57,16 @@ npm run news:enhance
 
 Bu komut başlık, spot, SEO başlığı, SEO açıklaması, anahtar kelimeler ve Markdown haber gövdesini yeniden üretir.
 
+## Piyasa Verisi
+
+Ana sayfadaki döviz bandını güncellemek için:
+
+```bash
+npm run market:update
+```
+
+`COLLECTAPI_KEY` tanımlıysa CollectAPI kullanılır. Anahtar yoksa sistem TCMB günlük döviz XML verisini fallback olarak okur.
+
 ## VPS Deploy Notları
 
 Sunucuda temel akış:

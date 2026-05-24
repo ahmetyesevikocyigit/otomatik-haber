@@ -1,9 +1,14 @@
 import getPostMetadata from "@/components/getPostMetadata";
+import getMarketData from "@/components/getMarketData";
+import MarketTicker from "@/components/MarketTicker";
 import Link from "next/link";
 import Image from "next/image";
 
+export const dynamic = "force-dynamic";
+
 const HomePage = () => {
   const posts = getPostMetadata();
+  const market = getMarketData();
   const [lead, secondary, third, fourth, fifth, sixth] = posts;
   const breaking = posts.find((post) => post.breaking) || lead;
   const topList = posts.slice(1, 5);
@@ -22,6 +27,8 @@ const HomePage = () => {
           </Link>
         </div>
       </section>
+
+      <MarketTicker items={market.items} source={market.source} updatedAt={market.updatedAt} />
 
       <section className="mx-auto max-w-[1180px] px-4 py-5">
         <div className="ui-sans mb-5 flex flex-wrap gap-x-5 gap-y-2 border-b border-neutral-300 pb-4 text-sm font-semibold">

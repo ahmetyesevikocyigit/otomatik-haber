@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "news:generate": "node scripts/generate-news.mjs",
-    "news:enhance": "node scripts/enhance-existing-news.mjs"
+    "news:enhance": "node scripts/enhance-existing-news.mjs",
+    "market:update": "node scripts/update-market.mjs"
   },
   "dependencies": {
     "@types/node": "18.15.11",

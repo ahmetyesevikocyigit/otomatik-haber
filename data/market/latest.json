@@ -1,0 +1,30 @@
+{
+  "updatedAt": "2026-05-24T08:41:04.430Z",
+  "source": "TCMB",
+  "items": [
+    {
+      "code": "USD",
+      "name": "Dolar",
+      "value": 45.6353,
+      "previousValue": null,
+      "change": null,
+      "source": "TCMB"
+    },
+    {
+      "code": "EUR",
+      "name": "Euro",
+      "value": 52.9552,
+      "previousValue": null,
+      "change": null,
+      "source": "TCMB"
+    },
+    {
+      "code": "GBP",
+      "name": "Sterlin",
+      "value": 61.3686,
+      "previousValue": null,
+      "change": null,
+      "source": "TCMB"
+    }
+  ]
+}
