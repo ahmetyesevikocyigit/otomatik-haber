@@ -6,4 +6,8 @@ export interface PostMetadata {
   category: string[];
   author: string;
   featured_image: string;
+  source?: string;
+  source_url?: string;
+  breaking?: boolean;
+  auto_generated?: boolean;
 }

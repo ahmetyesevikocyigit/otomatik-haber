@@ -16,12 +16,20 @@ const getPostMetadata = (): PostMetadata[] => {
       date: matterResult.data.date,
       subtitle: matterResult.data.subtitle,
       slug: fileName.replace(".md", ""),
-      category: matterResult.data.category,
+      category: Array.isArray(matterResult.data.category)
+        ? matterResult.data.category
+        : [matterResult.data.category].filter(Boolean),
       author: matterResult.data.author,
       featured_image: matterResult.data.featured_image,
+      source: matterResult.data.source,
+      source_url: matterResult.data.source_url,
+      breaking: Boolean(matterResult.data.breaking),
+      auto_generated: Boolean(matterResult.data.auto_generated),
     };
   });
-  return posts;
+  return posts.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
 };
 
 export default getPostMetadata;

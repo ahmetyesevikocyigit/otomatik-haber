@@ -24,61 +24,76 @@ export const generateStaticParams = async () => {
   }));
 };
 
+export async function generateMetadata(props: any) {
+  const post = getPostContent(props.params.slug);
+
+  if (!post) {
+    return {
+      title: "Haber bulunamadı | Haber Akışı",
+    };
+  }
+
+  return {
+    title: post.data.seo_title || `${post.data.title} | Haber Akışı`,
+    description: post.data.seo_description || post.data.subtitle,
+    keywords: post.data.keywords || post.data.category,
+    openGraph: {
+      title: post.data.title,
+      description: post.data.subtitle,
+      images: [post.data.featured_image],
+      type: "article",
+    },
+  };
+}
+
 function PostPage(props: any) {
   const slug = props.params.slug;
 
   const post = getPostContent(slug);
   if (post == null) {
     return (
-      <div className="py-5">
-        <h1 className="text-center mb-5 title">404: This Page Doesn't Exist</h1>
-        <article className="text-center article">
-          Go to homepage to find latest articles!
-        </article>
+      <div className="mx-auto max-w-3xl px-4 py-16 text-center">
+        <h1 className="mb-5 text-4xl font-bold">404: Haber bulunamadı</h1>
+        <article className="text-neutral-600">Ana sayfaya donup son haberleri inceleyebilirsin.</article>
       </div>
     );
   }
   return (
-    <div className="mx-4 my-10">
-      <div className="my-2 text-center px-1 font-semibold  text-[#e53170] text-base md:text-lg tracking-wide">
-        <span className="flex justify-center">
-          {post!.data.category.map((category: string) => {
-            return (
-              <div key={category} className="pr-4">
-                {category}
-              </div>
-            );
-          })}
-        </span>
+    <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mx-auto max-w-4xl">
+        <div className="mb-3 flex flex-wrap gap-2">
+          {post!.data.category.map((category: string) => (
+            <span
+              key={category}
+              className="ui-sans border border-neutral-950 px-2 py-1 text-xs font-bold uppercase tracking-[0.16em]"
+            >
+              {category}
+            </span>
+          ))}
+        </div>
+        <h1 className="text-4xl font-bold leading-none tracking-tight text-neutral-950 md:text-6xl">
+          {post!.data.title}
+        </h1>
+        <p className="mt-4 text-xl leading-8 text-neutral-700">{post!.data.subtitle}</p>
+        <div className="ui-sans mt-5 flex flex-wrap gap-x-2 gap-y-1 border-y border-neutral-200 py-3 text-sm font-semibold text-neutral-600">
+          <span>{post!.data.author}</span>
+          <span>·</span>
+          <span>{post!.data.date}</span>
+        </div>
       </div>
-      <h1 className=" text-black text-center text-3xl md:text-4xl font-extrabold ">
-        {post!.data.title}
-      </h1>
-      <div className="text-gray-600 text-base md:text-lg font-medium text-center my-3">
-        <span>{post!.data.subtitle}</span>
-      </div>
-      <article className="article">
-        <figure className="">
+
+      <article className="mx-auto mt-8 max-w-4xl">
+        <figure className="overflow-hidden bg-neutral-200">
           <Image
             src={post!.data.featured_image}
             alt=""
-            width={800}
-            height={480}
+            width={1200}
+            height={720}
+            className="w-full object-cover"
             priority
           />
         </figure>
-        <div className="flex justify-center my-4 ">
-          <div className="font-medium text-gray-600 text-base md:text-lg tracking-wide">
-            By
-          </div>
-          <div className="px-1 font-semibold  text-[#e53170] text-base md:text-lg tracking-wide">
-            {post!.data.author}
-          </div>
-          <div className="font-medium text-base md:text-lg text-gray-600 tracking-wide">
-            & Published on {post!.data.date}
-          </div>
-        </div>
-        <div className="prose md:prose-xl">
+        <div className="prose prose-neutral mt-8 max-w-none prose-headings:font-bold prose-a:text-neutral-950 md:prose-xl">
           <Markdown>{post!.content}</Markdown>
         </div>
       </article>

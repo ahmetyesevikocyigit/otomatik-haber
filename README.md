@@ -1,1 +1,43 @@
-Here is an improved Next.js template for news and magazines that you may want to check out: https://github.com/abhinishere/nextjs-tech-magazine-template
+# Otomatik Haber
+
+CNN benzeri yoğun haber vitrini için hazırlanan Next.js tabanlı başlangıç projesi.
+
+## Çalıştırma
+
+```bash
+npm install
+npm run dev
+```
+
+Site varsayilan olarak `http://localhost:3000` adresinde acilir.
+
+## İçerik
+
+Haberler `posts/` klasöründeki Markdown dosyalarından okunur. Her dosyada şu alanlar kullanılır:
+
+```md
+---
+title: "Haber basligi"
+subtitle: "Kisa spot"
+date: "2026-05-24"
+category: ["Ekonomi"]
+author: "Haber Merkezi"
+featured_image: "https://images.unsplash.com/..."
+source: "Kaynak"
+breaking: true
+---
+```
+
+Bir sonraki adımda RSS/API botu bu klasöre otomatik haber dosyaları yazacak veya CMS backend'e taşınacak.
+
+## Otomatik Haber
+
+RSS kaynaklarından haber üretmek için:
+
+```bash
+npm run news:generate
+```
+
+Kaynaklar `scripts/news-sources.json` dosyasından yönetilir. Script yeni haberleri `posts/` klasörüne Markdown olarak yazar ve tekrarları `data/generated/news-state.json` içinde takip eder.
+
+GitHub Actions için `.github/workflows/update-news.yml` eklendi. Repo GitHub'a yüklendiğinde workflow elle veya saatlik zamanlamayla çalıştırılabilir.

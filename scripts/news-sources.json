@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Gündem",
+    "category": "Gündem",
+    "url": "https://news.google.com/rss/search?q=g%C3%BCndem%20T%C3%BCrkiye&hl=tr&gl=TR&ceid=TR:tr"
+  },
+  {
+    "name": "Siyaset",
+    "category": "Siyaset",
+    "url": "https://news.google.com/rss/search?q=siyaset%20T%C3%BCrkiye&hl=tr&gl=TR&ceid=TR:tr"
+  },
+  {
+    "name": "Ekonomi",
+    "category": "Ekonomi",
+    "url": "https://news.google.com/rss/search?q=ekonomi%20borsa%20T%C3%BCrkiye&hl=tr&gl=TR&ceid=TR:tr"
+  },
+  {
+    "name": "Futbol",
+    "category": "Futbol",
+    "url": "https://news.google.com/rss/search?q=S%C3%BCper%20Lig%20futbol&hl=tr&gl=TR&ceid=TR:tr"
+  },
+  {
+    "name": "Teknoloji",
+    "category": "Teknoloji",
+    "url": "https://news.google.com/rss/search?q=teknoloji%20yapay%20zeka%20T%C3%BCrkiye&hl=tr&gl=TR&ceid=TR:tr"
+  },
+  {
+    "name": "Dünya",
+    "category": "Dünya",
+    "url": "https://news.google.com/rss/search?q=d%C3%BCnya%20haberleri&hl=tr&gl=TR&ceid=TR:tr"
+  },
+  {
+    "name": "Kültür",
+    "category": "Kültür",
+    "url": "https://news.google.com/rss/search?q=k%C3%BClt%C3%BCr%20sanat%20T%C3%BCrkiye&hl=tr&gl=TR&ceid=TR:tr"
+  }
+]
