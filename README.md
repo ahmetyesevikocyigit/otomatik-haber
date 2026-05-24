@@ -38,7 +38,7 @@ RSS kaynaklarından haber üretmek için:
 npm run news:generate
 ```
 
-Kaynaklar `scripts/news-sources.json` dosyasından yönetilir. Script yeni haberleri `posts/` klasörüne Markdown olarak yazar ve tekrarları `data/generated/news-state.json` içinde takip eder.
+`COLLECTAPI_KEY` tanımlıysa script önce CollectAPI Haberler API'den `general`, `economy`, `sport` ve `technology` etiketleriyle haber çeker. Anahtar yoksa veya limit dolarsa RSS kaynakları yedek olarak kullanılır. RSS kaynakları `scripts/news-sources.json` dosyasından yönetilir. Script yeni haberleri `posts/` klasörüne Markdown olarak yazar ve tekrarları `data/generated/news-state.json` içinde takip eder.
 
 GitHub Actions için `.github/workflows/update-news.yml` eklendi. Repo GitHub'a yüklendiğinde workflow elle veya saatlik zamanlamayla çalıştırılabilir.
 
@@ -56,6 +56,12 @@ npm run news:enhance
 ```
 
 Bu komut başlık, spot, SEO başlığı, SEO açıklaması, anahtar kelimeler ve Markdown haber gövdesini yeniden üretir.
+
+Yalnızca daha önce OpenAI ile iyileştirilmemiş yeni haberleri yazdırmak için:
+
+```bash
+NEWS_ENHANCE_ONLY_PENDING=true npm run news:enhance
+```
 
 ## Piyasa Verisi
 

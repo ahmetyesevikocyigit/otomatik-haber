@@ -7,14 +7,44 @@ const rootDir = process.cwd();
 const postsDir = path.join(rootDir, "posts");
 const sourcesPath = path.join(rootDir, "scripts", "news-sources.json");
 const statePath = path.join(rootDir, "data", "generated", "news-state.json");
+const envPath = path.join(rootDir, ".env");
 
 const MAX_ITEMS_PER_SOURCE = Number(process.env.NEWS_ITEMS_PER_SOURCE || 2);
 const MAX_TOTAL_ITEMS = Number(process.env.NEWS_MAX_TOTAL || 10);
+const COLLECTAPI_TAGS = [
+  { tag: "general", category: "Gündem" },
+  { tag: "economy", category: "Ekonomi" },
+  { tag: "sport", category: "Futbol" },
+  { tag: "technology", category: "Teknoloji" },
+];
 
 const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: "",
 });
+
+async function loadEnvFile() {
+  try {
+    const env = await fs.readFile(envPath, "utf8");
+    for (const line of env.split(/\r?\n/u)) {
+      const match = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/u);
+      if (!match || process.env[match[1]]) continue;
+      process.env[match[1]] = match[2].replace(/^["']|["']$/gu, "");
+    }
+  } catch {
+    // .env is optional.
+  }
+}
+
+function collectApiAuthorization() {
+  const key = String(process.env.COLLECTAPI_KEY || "").trim();
+  if (!key) return "";
+  return key.toLocaleLowerCase("en-US").startsWith("apikey ") ? key : `apikey ${key}`;
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function stripHtml(value = "") {
   return String(value)
@@ -184,6 +214,51 @@ function markdownFor(item) {
   return `---\ntitle: "${title}"\nsubtitle: "${subtitle}"\nseo_title: "${title} | Son Dakika ${item.category} Haberleri"\nseo_description: "${seoDescription}"\nkeywords: [${keywords.map((keyword) => `"${keyword}"`).join(", ")}]\ndate: "${date}"\ncategory: ["${item.category}"]\nauthor: "Haber Akışı"\nfeatured_image: "${item.image}"\nsource: "${source}"\nsource_url: "${link}"\nauto_generated: true\n---\n\n${detailedArticle({ ...item, title: displayTitle })}\n`;
 }
 
+async function fetchCollectApiNews(tagConfig) {
+  const authorization = collectApiAuthorization();
+  if (!authorization) return [];
+
+  const url = new URL("https://api.collectapi.com/news/getNews");
+  url.searchParams.set("country", "tr");
+  url.searchParams.set("tag", tagConfig.tag);
+
+  const response = await fetch(url, {
+    headers: {
+      authorization,
+      "content-type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`CollectAPI haberleri alınamadı (${tagConfig.tag}): ${response.status}`);
+  }
+
+  const data = await response.json();
+  if (!data.success || !Array.isArray(data.result)) {
+    throw new Error(`CollectAPI beklenmeyen yanıt döndürdü (${tagConfig.tag})`);
+  }
+
+  return data.result
+    .slice(0, MAX_ITEMS_PER_SOURCE)
+    .map((item) => {
+      const title = stripHtml(item.name);
+      const sourceName = stripHtml(item.source || "CollectAPI");
+      const subtitle = cleanSubtitle(excerptFrom(item.description, title), sourceName, title);
+
+      return {
+        id: item.url || `${tagConfig.tag}-${item.key}-${title}`,
+        title,
+        subtitle,
+        category: tagConfig.category,
+        link: item.url,
+        pubDate: item.date,
+        sourceName,
+        image: item.image || categoryImage(tagConfig.category),
+      };
+    })
+    .filter((item) => item.title && item.link);
+}
+
 async function fetchSource(source) {
   const response = await fetch(source.url, {
     headers: {
@@ -221,6 +296,7 @@ async function fetchSource(source) {
 }
 
 async function main() {
+  await loadEnvFile();
   await fs.mkdir(postsDir, { recursive: true });
   await fs.mkdir(path.dirname(statePath), { recursive: true });
 
@@ -229,8 +305,38 @@ async function main() {
   const seen = new Set(state.seen || []);
   const slugs = await existingSlugs();
   const created = [];
+  const collectApiEnabled = Boolean(collectApiAuthorization());
+
+  if (collectApiEnabled) {
+    for (const tagConfig of COLLECTAPI_TAGS) {
+      if (created.length >= MAX_TOTAL_ITEMS) break;
+      const items = await fetchCollectApiNews(tagConfig);
+
+      for (const item of items) {
+        if (created.length >= MAX_TOTAL_ITEMS) break;
+        const fingerprint = crypto.createHash("sha256").update(item.id).digest("hex");
+        if (seen.has(fingerprint)) continue;
+
+        let slug = slugify(item.title);
+        let index = 2;
+        while (slugs.has(slug)) {
+          slug = `${slugify(item.title)}-${index}`;
+          index += 1;
+        }
+
+        const filePath = path.join(postsDir, `${slug}.md`);
+        await fs.writeFile(filePath, markdownFor(item), "utf8");
+        slugs.add(slug);
+        seen.add(fingerprint);
+        created.push({ slug, title: item.title, category: item.category, source: "CollectAPI" });
+      }
+
+      await sleep(1200);
+    }
+  }
 
   for (const source of sources) {
+    if (created.length >= MAX_TOTAL_ITEMS) break;
     const items = await fetchSource(source);
 
     for (const item of items) {
@@ -249,7 +355,7 @@ async function main() {
       await fs.writeFile(filePath, markdownFor(item), "utf8");
       slugs.add(slug);
       seen.add(fingerprint);
-      created.push({ slug, title: item.title, category: item.category });
+      created.push({ slug, title: item.title, category: item.category, source: "RSS" });
     }
   }
 
@@ -261,7 +367,7 @@ async function main() {
 
   console.log(`Oluşturulan haber sayısı: ${created.length}`);
   for (const item of created) {
-    console.log(`- [${item.category}] ${item.title} -> posts/${item.slug}.md`);
+    console.log(`- [${item.source}] [${item.category}] ${item.title} -> posts/${item.slug}.md`);
   }
 }
 

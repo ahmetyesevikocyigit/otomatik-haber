@@ -7,6 +7,7 @@ const postsDir = path.join(rootDir, "posts");
 const envPath = path.join(rootDir, ".env");
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5.5";
 const OPENAI_API_URL = "https://api.openai.com/v1/responses";
+const ONLY_PENDING = process.env.NEWS_ENHANCE_ONLY_PENDING === "true";
 
 async function loadEnvFile() {
   try {
@@ -183,6 +184,11 @@ async function main() {
   for (const file of files) {
     const filePath = path.join(postsDir, file);
     const parsed = matter(await fs.readFile(filePath, "utf8"));
+    if (ONLY_PENDING && parsed.data.ai_enhanced) {
+      console.log(`Atlandı: ${file}`);
+      continue;
+    }
+
     const categories = asArray(parsed.data.category).map(normalizedCategory);
     const category = categories[0];
     const rewritten = await rewriteWithOpenAI({
