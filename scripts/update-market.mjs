@@ -5,7 +5,12 @@ import { XMLParser } from "fast-xml-parser";
 const rootDir = process.cwd();
 const outputPath = path.join(rootDir, "data", "market", "latest.json");
 const envPath = path.join(rootDir, ".env");
-const collectApiKey = process.env.COLLECTAPI_KEY;
+
+function collectApiAuthorization() {
+  const key = String(process.env.COLLECTAPI_KEY || "").trim();
+  if (!key) return "";
+  return key.toLocaleLowerCase("en-US").startsWith("apikey ") ? key : `apikey ${key}`;
+}
 
 async function loadEnvFile() {
   try {
@@ -39,11 +44,12 @@ function marketItem({ code, name, value, previousValue, source }) {
 }
 
 async function fetchCollectApi() {
-  if (!process.env.COLLECTAPI_KEY) return null;
+  const authorization = collectApiAuthorization();
+  if (!authorization) return null;
 
   const response = await fetch("https://api.collectapi.com/economy/allCurrency", {
     headers: {
-      authorization: `apikey ${process.env.COLLECTAPI_KEY}`,
+      authorization,
       "content-type": "application/json",
     },
   });

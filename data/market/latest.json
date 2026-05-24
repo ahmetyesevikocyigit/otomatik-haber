@@ -1,30 +1,30 @@
 {
-  "updatedAt": "2026-05-24T08:41:04.430Z",
-  "source": "TCMB",
+  "updatedAt": "2026-05-24T08:45:02.470Z",
+  "source": "CollectAPI",
   "items": [
     {
       "code": "USD",
       "name": "Dolar",
-      "value": 45.6353,
+      "value": 45.7392,
       "previousValue": null,
       "change": null,
-      "source": "TCMB"
+      "source": "CollectAPI"
     },
     {
       "code": "EUR",
       "name": "Euro",
-      "value": 52.9552,
+      "value": 53.0889,
       "previousValue": null,
       "change": null,
-      "source": "TCMB"
+      "source": "CollectAPI"
     },
     {
       "code": "GBP",
       "name": "Sterlin",
-      "value": 61.3686,
+      "value": 62.0462,
       "previousValue": null,
       "change": null,
-      "source": "TCMB"
+      "source": "CollectAPI"
     }
   ]
 }
